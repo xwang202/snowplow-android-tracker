@@ -1,15 +1,12 @@
-apply plugin: 'android-sdk-manager'
-
 buildscript {
     repositories {
         jcenter()
-        mavenCentral()
+        google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.3'
-        classpath 'com.jakewharton.sdkmanager:gradle-plugin:0.12.0'
+        classpath 'com.android.tools.build:gradle:3.1.0'
         classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.4.0'
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.4.1'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'
     }
 }
 
@@ -20,7 +17,7 @@ subprojects {
         maven {
             url "http://maven.snplow.com/releases"
         }
-        mavenCentral()
         jcenter()
+        google()
     }
 }

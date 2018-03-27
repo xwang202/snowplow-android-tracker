@@ -1,12 +1,12 @@
 plugins {
-    id "com.jfrog.bintray" version "1.5"
+    id 'com.jfrog.bintray' version '1.5'
+    id 'com.android.library'
+    id 'jacoco'
+    id 'maven-publish'
+    id 'com.github.dcendents.android-maven'
+    id 'com.github.kt3k.coveralls'
 }
 
-apply plugin: 'com.android.library'
-apply plugin: 'jacoco'
-apply plugin: 'maven-publish'
-apply plugin: 'com.github.dcendents.android-maven'
-apply plugin: 'com.github.kt3k.coveralls'
 
 jacoco {
     toolVersion = "0.7.7.201606060606"
@@ -14,7 +14,6 @@ jacoco {
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "23.0.3"
 
     defaultConfig {
         minSdkVersion 11
@@ -59,18 +58,6 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
     androidTestCompile 'com.google.android.gms:play-services-analytics:9.0.2'
     androidTestCompile 'com.squareup.okhttp3:mockwebserver:3.4.1'
-}
-
-android.libraryVariants.all { variant ->
-    task("generate${variant.name.capitalize()}Javadoc", type: Javadoc) {
-        title = "Documentation for snowplow-android-core $version API"
-        description "Generates Javadoc for $variant.name."
-        source = variant.javaCompile.source
-        ext.androidJar = "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
-        classpath = files(variant.javaCompile.classpath.files) + files(ext.androidJar)
-        options.links("http://docs.oracle.com/javase/7/docs/api/");
-        exclude '**/R.java'
-    }
 }
 
 coveralls {
