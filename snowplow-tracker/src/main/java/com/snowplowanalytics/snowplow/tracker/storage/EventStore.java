@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.io.File;
 
 import com.snowplowanalytics.snowplow.tracker.payload.Payload;
 import com.snowplowanalytics.snowplow.tracker.utils.Logger;
@@ -41,6 +42,7 @@ public class EventStore {
 
     private SQLiteDatabase database;
     private EventStoreHelper dbHelper;
+    private String dbPath;
     private String[] allColumns = {
             EventStoreHelper.COLUMN_ID,
             EventStoreHelper.COLUMN_EVENT_DATA,
@@ -59,6 +61,9 @@ public class EventStore {
      */
     public EventStore(Context context, int sendLimit) {
         dbHelper = EventStoreHelper.getInstance(context);
+        dbPath = context.getApplicationContext()
+                .getDatabasePath("snowplowEvents.sqlite")
+                .getAbsolutePath();
         open();
         this.sendLimit = sendLimit;
 
@@ -80,8 +85,13 @@ public class EventStore {
      */
     public void open() {
         if (!isDatabaseOpen()) {
-            database = dbHelper.getWritableDatabase();
+            File file = new File(dbPath);
+            file.getParentFile().mkdirs();
+            database = SQLiteDatabase.openDatabase(dbPath,
+                    null,
+                    SQLiteDatabase.NO_LOCALIZED_COLLATORS | SQLiteDatabase.CREATE_IF_NECESSARY);
             database.enableWriteAheadLogging();
+            dbHelper.onCreate(database);
         }
     }
 
