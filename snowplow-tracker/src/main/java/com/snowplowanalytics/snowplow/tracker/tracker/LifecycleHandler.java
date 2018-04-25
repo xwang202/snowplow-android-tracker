@@ -40,6 +40,15 @@ public class LifecycleHandler implements Application.ActivityLifecycleCallbacks,
     private static boolean isInBackground = false;
     private static AtomicInteger foregroundIndex = new AtomicInteger(0);
     private static AtomicInteger backgroundIndex = new AtomicInteger(0);
+    private static boolean isHandlerSuspended = false;
+
+    public void suspendHandler() {
+        isHandlerSuspended = true;
+    }
+
+    public void resumeHandler() {
+        isHandlerSuspended = false;
+    }
 
     @Override
     public void onActivityCreated(Activity activity, Bundle bundle) {}
@@ -49,7 +58,7 @@ public class LifecycleHandler implements Application.ActivityLifecycleCallbacks,
 
     @Override
     public void onActivityResumed(Activity activity) {
-        if (isInBackground){
+        if (isInBackground && !isHandlerSuspended){
             Logger.d(TAG, "Application is in the foreground");
             isInBackground = false;
 
@@ -98,7 +107,7 @@ public class LifecycleHandler implements Application.ActivityLifecycleCallbacks,
 
     @Override
     public void onTrimMemory(int i) {
-        if (i == ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN) {
+        if (i == ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN && !isHandlerSuspended) {
             Logger.d(TAG, "Application is in the background");
             isInBackground = true;
 
