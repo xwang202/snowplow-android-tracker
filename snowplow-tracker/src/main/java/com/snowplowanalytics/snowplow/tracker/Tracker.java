@@ -533,6 +533,20 @@ public class Tracker {
     }
 
     /**
+     * Sets the LifecycleHandler hooks
+     *
+     * @param activity The application activity
+     */
+    public void setLifecycleHandler(Activity activity, List<SelfDescribingJson> context) {
+        if ((this.lifecycleEvents || this.sessionContext) &&
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            LifecycleHandler handler = new LifecycleHandler(context);
+            activity.getApplication().registerActivityLifecycleCallbacks(handler);
+            activity.registerComponentCallbacks(handler);
+        }
+    }
+
+    /**
      * @param subject a valid subject object
      */
     public void setSubject(Subject subject) {
