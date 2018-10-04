@@ -37,6 +37,10 @@ public class DemoUtils {
         executor.scheduleAtFixedRate(runnable, initDelay, delay, timeUnit);
     }
 
+    public static void scheduleDelayed(Runnable runnable, long delay, TimeUnit timeUnit) {
+        executor.schedule(runnable, delay, timeUnit);
+    }
+
     /**
      * Shuts the executor down and resets it.
      */

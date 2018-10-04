@@ -25,8 +25,10 @@ import android.widget.TextView;
 import android.text.method.ScrollingMovementMethod;
 import android.support.customtabs.CustomTabsIntent;
 import android.net.Uri;
+import android.widget.Toast;
 
 import com.snowplowanalytics.snowplow.tracker.DevicePlatforms;
+import com.snowplowanalytics.snowplow.tracker.Session;
 import com.snowplowanalytics.snowplow.tracker.Subject;
 import com.snowplowanalytics.snowplow.tracker.emitter.HttpMethod;
 import com.snowplowanalytics.snowplow.tracker.emitter.RequestCallback;
@@ -38,6 +40,7 @@ import com.snowplowanalytics.snowplow.tracker.utils.Util;
 import com.snowplowanalytics.snowplowtrackerdemo.utils.DemoUtils;
 import com.snowplowanalytics.snowplowtrackerdemo.utils.TrackerEvents;
 
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -45,6 +48,8 @@ import java.util.concurrent.TimeUnit;
  */
 @SuppressWarnings("FieldCanBeLocal")
 public class Demo extends Activity {
+
+    private static final int BACKGROUND_TIMEOUT = 15; // Same as in upday.
 
     private Button _startButton, _tabButton;
     private EditText _uriField;
@@ -101,6 +106,29 @@ public class Demo extends Activity {
         if (pausedSession) {
             Tracker.instance().suspendSessionChecking(false);
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        DemoUtils.scheduleDelayed(new Runnable() {
+            @Override
+            public void run() {
+                TrackerEvents.trackAll(Tracker.instance());
+                updateLogger("\nTracked 14 events after application went to background.\n"
+                             + "Logging Session info...\n");
+                logSession();
+                updateLogger("\nNow press start button again...\n"
+                             + "You should see events tracked with the same session index.");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(Demo.this, "Please resume the application again...", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }, BACKGROUND_TIMEOUT + 5, TimeUnit.SECONDS);
     }
 
     /**
@@ -161,6 +189,8 @@ public class Demo extends Activity {
                 } else {
                     updateLogger("URI field empty!\n");
                 }
+
+                logSession();
             }
         });
     }
@@ -178,6 +208,12 @@ public class Demo extends Activity {
 
             }
         });
+    }
+
+    private void logSession() {
+        final Session session = Tracker.instance().getSession();
+        updateLogger(String.format(Locale.ENGLISH, "Session No: %d, Session Id: %s", session.getSessionIndex(),
+                                   session.getCurrentSessionId()));
     }
 
     /**
@@ -271,7 +307,7 @@ public class Demo extends Activity {
         Tracker.close();
 
         Emitter emitter = new Emitter.EmitterBuilder("", this.getApplicationContext())
-                .callback(getCallback())
+                //.callback(getCallback())
                 .tick(1)
                 .build();
 
@@ -291,7 +327,7 @@ public class Demo extends Activity {
                 .applicationCrash(true)
                 .lifecycleEvents(true)
                 .foregroundTimeout(60)
-                .backgroundTimeout(30)
+                .backgroundTimeout(BACKGROUND_TIMEOUT) // 15 Seconds same as in upday.
                 .build()
         );
     }
