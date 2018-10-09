@@ -227,7 +227,7 @@ public class Util {
      * @return whether the time is in range or not
      */
     public static boolean isTimeInRange(long startTime, long checkTime, long range) {
-        return startTime > (checkTime - range);
+        return startTime > (checkTime - range - 500); // added 500ms of time for variability
     }
 
     /**
