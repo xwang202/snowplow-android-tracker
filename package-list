@@ -1,0 +1,8 @@
+com.snowplowanalytics.snowplow.tracker
+com.snowplowanalytics.snowplow.tracker.constants
+com.snowplowanalytics.snowplow.tracker.emitter
+com.snowplowanalytics.snowplow.tracker.events
+com.snowplowanalytics.snowplow.tracker.payload
+com.snowplowanalytics.snowplow.tracker.storage
+com.snowplowanalytics.snowplow.tracker.tracker
+com.snowplowanalytics.snowplow.tracker.utils
