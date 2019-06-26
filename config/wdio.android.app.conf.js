@@ -22,7 +22,7 @@ config.capabilities = [
         platformVersion: '9',
         orientation: 'PORTRAIT',
         maxInstances: 1,
-        app: join(process.cwd(), './snowplow-demo-app/build/outputs/apk/release/snowplow-demo-app-release-unsigned.apk'),
+        app: join(process.cwd(), './snowplow-demo-app/build/outputs/apk/release/snowplow-demo-app-release.apk'),
         // Read the reset strategies very well, they differ per platform, see
         // http://appium.io/docs/en/writing-running-appium/other/reset-strategies/
         noReset: true,
