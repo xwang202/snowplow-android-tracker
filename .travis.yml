@@ -17,12 +17,12 @@ env:
     - secure: iXVs65+lPjyTr60MsX9K2WpjJ5ijt4cnBE9PT6ouHSjkZjugotaNoX3nXZev8fKFLsH0JPxpsxBVy66jz6iOddMfLdzSiL2oOeeYNxyNThOdGp9R/JmYtivgrMm6v3e1zzCLvj9onOwBUVdWVLD/BXgYi7wP96rJFENlVjuszys=
     - secure: BXwZhWDFFXzdaTAPAvMKeOfnLHxkmdXoeMZ/GtVYkT62JxeuiaTW6Z6rT0gZKAEyxmUBxFX1CP+1m1Gi0cWrQHfTBbFDJO7iKu7mG9LcZhQ8Cm657yt2TBc+fnVqbG5OxXWhSBs1lF1gZJ6+ehEIJn3YjP6fDYv0fNnTGpYHCYo=
 
-#android:
-#  components:
+android:
+  components:
 #    - tools
 #    - platform-tools
 #    - tools
-#    - build-tools-$ANDROID_BUILD_TOOLS
+    - build-tools-$ANDROID_BUILD_TOOLS
 #    - android-$ANDROID_API
 #    - android-$EMULATOR_API
 #    - extra-android-support
