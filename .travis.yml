@@ -20,7 +20,7 @@ env:
 android:
   components:
 #    - tools
-#    - platform-tools
+    - platform-tools
 #    - tools
     - build-tools-$ANDROID_BUILD_TOOLS
 #    - android-$ANDROID_API
@@ -44,7 +44,7 @@ install:
   - yes | sdkmanager "tools"
   - yes | sdkmanager "platform-tools"
   - yes | sdkmanager "build-tools;"$ANDROID_BUILD_TOOLS
-  - yes | sdkmanager "platforms;android-"$ANDROID_API
+#  - yes | sdkmanager "platforms;android-"$ANDROID_API
   - yes | sdkmanager "emulator"
   - yes | sdkmanager "extras;android;m2repository"
   - yes | sdkmanager "extras;google;m2repository"
