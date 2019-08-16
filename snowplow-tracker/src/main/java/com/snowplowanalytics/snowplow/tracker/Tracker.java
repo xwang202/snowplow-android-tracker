@@ -56,6 +56,7 @@ import com.snowplowanalytics.snowplow.tracker.events.ConsentDocument;
 import com.snowplowanalytics.snowplow.tracker.utils.Logger;
 import com.snowplowanalytics.snowplow.tracker.payload.SelfDescribingJson;
 import com.snowplowanalytics.snowplow.tracker.utils.Util;
+import com.snowplowanalytics.snowplow.tracker.utils.Util.BASIS;
 
 
 /**
@@ -639,6 +640,11 @@ public class Tracker {
             contexts.add(InstallTracker.getApplicationContext(this.context));
         }
 
+        // Add gdpr context
+        if (this.gdprContext.get()) {
+            contexts.add(Util.getGDPRContext(this.basisForProcessing, this.documentId, this.documentVersion, this.documentDescription));
+        }
+
         // Add global contexts
         synchronized (globalContexts) {
             if (!globalContexts.isEmpty()) {
@@ -956,5 +962,27 @@ public class Tracker {
                 }
             }
         }
+    }
+
+    // gdpr context
+    private AtomicBoolean gdprContext = new AtomicBoolean(false);
+    private String basisForProcessing;
+    private String documentId;
+    private String documentVersion;
+    private String documentDescription;
+
+    /**
+     * Enables gdpr context to be sent with every event
+     */
+    public synchronized void enableGDPRContext(BASIS basisForProcessing, String documentId, String documentVersion, String documentDescription) {
+        this.basisForProcessing = basisForProcessing.toString().toLowerCase();
+        this.documentId = documentId;
+        this.documentVersion = documentVersion;
+        this.documentDescription = documentDescription;
+        this.gdprContext.set(true);
+    }
+
+    public synchronized void disableGDPRContext() {
+        this.gdprContext.set(false);
     }
 }
