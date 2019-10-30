@@ -41,6 +41,7 @@ import com.snowplowanalytics.snowplow.tracker.emitter.RequestCallback;
 import com.snowplowanalytics.snowplow.tracker.emitter.RequestSecurity;
 import com.snowplowanalytics.snowplow.tracker.Tracker;
 import com.snowplowanalytics.snowplow.tracker.Emitter;
+import com.snowplowanalytics.snowplow.tracker.events.ScreenView;
 import com.snowplowanalytics.snowplow.tracker.payload.SelfDescribingJson;
 import com.snowplowanalytics.snowplow.tracker.utils.LogLevel;
 import com.snowplowanalytics.snowplow.tracker.utils.Util;
@@ -50,6 +51,7 @@ import com.snowplowanalytics.snowplowtrackerdemo.utils.TrackerEvents;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static com.snowplowanalytics.snowplow.tracker.utils.Util.addToMap;
@@ -329,6 +331,7 @@ public class Demo extends Activity {
         addToMap(Parameters.APP_VERSION, "0.3.0", pairs);
         addToMap(Parameters.APP_BUILD, "3", pairs);
         Tracker.instance().addGlobalContext(new SelfDescribingJson(TrackerConstants.SCHEMA_APPLICATION, pairs));
+        Tracker.instance().track(ScreenView.builder().name("DemoScreen123").id(UUID.randomUUID().toString()).build());
     }
 
     /**
