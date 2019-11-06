@@ -299,6 +299,8 @@ public class Demo extends Activity {
         Tracker.close();
 
         Emitter emitter = new Emitter.EmitterBuilder("", this.getApplicationContext())
+                .security(RequestSecurity.HTTPS)
+                .method(HttpMethod.POST)
                 .callback(getCallback())
                 .tick(1)
                 .build();
