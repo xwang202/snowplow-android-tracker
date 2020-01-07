@@ -131,6 +131,8 @@ public class Tracker {
     private boolean applicationContext;
     private ScreenState screenState;
 
+    private ErrorLogging errorLogger;
+
     private AtomicBoolean dataCollection = new AtomicBoolean(true);
 
     /**
@@ -163,6 +165,8 @@ public class Tracker {
         boolean onlyTrackLabelledScreens = false; // Optional
         boolean installTracking = false; // Optional
         boolean applicationContext = false; // Optional
+
+        ErrorLogging errorLogger = null;
 
         /**
          * @param emitter Emitter to which events will be sent
@@ -378,6 +382,15 @@ public class Tracker {
         }
 
         /**
+         * @param errorLogger The delegate used to report tracker's errors.
+         * @return itself
+         */
+        public TrackerBuilder errorLogger(ErrorLogging errorLogger) {
+            this.errorLogger = errorLogger;
+            return this;
+        }
+
+        /**
          * Creates a new Tracker or throws an
          * Exception of we cannot find a suitable
          * extensible class.
@@ -403,7 +416,6 @@ public class Tracker {
         this.namespace = builder.namespace;
         this.subject = builder.subject;
         this.devicePlatform = builder.devicePlatform;
-        this.level = builder.logLevel;
         this.sessionContext = builder.sessionContext;
         this.sessionCheckInterval = builder.sessionCheckInterval;
         this.sessionCallbacks = builder.sessionCallbacks;
@@ -420,6 +432,14 @@ public class Tracker {
         this.screenContext = builder.screenContext;
         this.installTracking = builder.installTracking;
         this.applicationContext = builder.applicationContext;
+        this.errorLogger = builder.errorLogger;
+        this.level = builder.logLevel;
+
+        if (errorLogger != null && level == LogLevel.OFF) {
+            level = LogLevel.ERROR;
+        }
+        Logger.setErrorLogger(errorLogger);
+        Logger.updateLogLevel(level);
 
         if (this.installTracking) {
             this.installTracker = new InstallTracker(this.context);
@@ -465,7 +485,6 @@ public class Tracker {
             });
         }
 
-        Logger.updateLogLevel(builder.logLevel);
         Logger.v(TAG, "Tracker created successfully.");
     }
 
@@ -618,8 +637,18 @@ public class Tracker {
                                                List<SelfDescribingJson> contexts, String eventId) {
 
         // Add session context
-        if (this.sessionContext && this.trackerSession.getHasLoadedFromFile()) {
-            contexts.add(this.trackerSession.getSessionContext(eventId));
+        if (sessionContext) {
+            if (trackerSession.getHasLoadedFromFile()) {
+                synchronized (trackerSession) {
+                    SelfDescribingJson sessionContextJson = trackerSession.getSessionContext(eventId);
+                    if (sessionContextJson == null) {
+                        Logger.e(TAG, "Method getSessionContext method returned null with eventId: %s", eventId);
+                    }
+                    contexts.add(sessionContextJson);
+                }
+            } else {
+                Logger.e(TAG, "Method getHasLoadedFromFile method returned false with eventId: %s", eventId);
+            }
         }
 
         // Add Geo-Location Context
@@ -699,7 +728,11 @@ public class Tracker {
             sessionExecutor.scheduleAtFixedRate(new Runnable() {
                 @Override
                 public void run() {
-                    session.checkAndUpdateSession();
+                    try {
+                        session.checkAndUpdateSession();
+                    } catch (Exception e) {
+                        Logger.e(TAG, "Method checkAndUpdateSession raised an exception: %s", e);
+                    }
                 }
             }, this.sessionCheckInterval, this.sessionCheckInterval, this.timeUnit);
         }

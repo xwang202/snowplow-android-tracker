@@ -71,7 +71,7 @@ public class ActivityLifecycleHandler implements Application.ActivityLifecycleCa
                     .build()
             );
         } catch (Exception e) {
-            Logger.e(TAG, e.getMessage());
+            Logger.e(TAG, "Method onActivityResumed raised an exception: %s", e);
         }
     }
 

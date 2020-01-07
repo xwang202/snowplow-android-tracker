@@ -95,21 +95,24 @@ public class Session {
             @Override
             public Void call() {
                 Map sessionInfo = getSessionFromFile();
+                String id;
                 if (sessionInfo == null) {
-                    userId = Util.getEventId();
+                    id = Util.getEventId();
                 } else {
                     try {
                         String uid = sessionInfo.get(Parameters.SESSION_USER_ID).toString();
                         String sid = sessionInfo.get(Parameters.SESSION_ID).toString();
                         int si = (int) sessionInfo.get(Parameters.SESSION_INDEX);
-
-                        userId = uid;
+                        id = uid;
                         sessionIndex = si;
                         currentSessionId = sid;
                     } catch (Exception e){
-                        Logger.e(TAG, "Exception occurred retrieving session info from file: %s", e.getMessage());
-                        userId = Util.getEventId();
+                        Logger.e(TAG, String.format("Exception occurred retrieving session info from file: %s", e));
+                        id = Util.getEventId();
                     }
+                }
+                synchronized (this) {
+                    userId = id;
                 }
                 hasLoadedFromFile.set(true);
                 updateSessionInfo();
@@ -232,7 +235,7 @@ public class Session {
             try {
                 Tracker.instance().resumeSessionChecking();
             } catch (Exception e) {
-                Logger.e(TAG, "Could not resume checking as tracker not setup");
+                Logger.e(TAG, "Could not resume checking as tracker not setup. Exception: %s", e);
             }
         }
 
@@ -423,5 +426,7 @@ public class Session {
     /**
      * @return future for session file loading
      */
-    public Future getLoadFromFileFuture() { return this.loadFromFileFuture; }
+    public Future getLoadFromFileFuture() {
+        return this.loadFromFileFuture;
+    }
 }
